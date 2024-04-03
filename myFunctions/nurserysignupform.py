@@ -25,7 +25,7 @@ def nurserysignupform():
                     (name,address, city,zip,country,phone,email,password))
         mysql.connection.commit()
         cur.close()
-        return render_template("nursery/index.html", success_message="Successfully SignUp.")
+        return render_template("nursery/login.html", success_message="Successfully SignUp.")
     else:
         return render_template("nursery/signup.html")
 

@@ -46,7 +46,7 @@
             <a href="{{ url_for('usernotification') }}" class="fa-solid fa-bell"></a>
             <a href="{{ url_for('userfavourite') }}" class="fas fa-heart"></a>
             <a href="{{ url_for('uploadimage') }}" class="fa-solid fa-camera-retro"></a>
-            <a href="{{ url_for('login') }}" class="fas fa-user"></a>
+            <a href="{{ url_for('logout') }}" class="fa fa-sign-out"></a>
         </div>
     </header>
     <!--Header section ends-->
@@ -151,13 +151,13 @@
 
                     <div class="icons">
                         <a href="#" class="fas fa-heart"></a>
-                        <a href="flowerdetails/{{flower[0]}}" class="cart-btn">{{flower[0]}}</a>
-                        <a href="#" class="fas fa-share"></a>
+                        <a href="#" class="cart-btn"></a>
+                        <a href="flowerdetails/{{flower[0]}}" class="fas fa-share"></a>
                     </div>
                 </div>
                 <div class="content">
                     <h3>{{flower[2]}}</h3>
-                    <div class="price">{{flower[3]}}</div>
+                    <div class="price">{{flower[9]}}</div>
                 </div>
             </div>
             {% endfor %}

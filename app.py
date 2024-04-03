@@ -11,12 +11,14 @@ from myFunctions.loginfun import addlogin
 
 from myFunctions.userAddPlanFun import userAddPlanFun
 from myFunctions.addFlowerfun import addFlowerfun
+from myFunctions.nurserylogin import addnurserylogin
 # from myFunctions.editplan import editplan
 from flask_mysqldb import MySQL
 
 app = Flask(__name__, template_folder='templates')
 
 from flask_sqlalchemy import SQLAlchemy
+app.secret_key = 'your_secret_key'
 # database
 # alchemy
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:@localhost/flowerplantation"
@@ -153,18 +155,59 @@ def index():
 
 @app.route('/', methods=['GET'])
 def getFlowerdataindex():
-    # Fetch all flower plans from the database
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT flower_id, flower_image_name, flower_name, flower_information, color, season, category, altitude, height, area, grow_time, pesticide, fertilizer, disease, fragrance, shape, sunlight, watering FROM flower")
-    flower_data = cur.fetchall()
-    cur.close()
-    # Pass the fetched data to the template
-    return render_template("/index.html", flowers=flower_data)
+    if 'id' in session:  # Assuming 'id' is stored in the session when the user is logged in
+        # Fetch all flower plans from the database
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT flower_id, flower_image_name, flower_name, flower_information, color, season, category, altitude, height, area, grow_time, pesticide, fertilizer, disease, fragrance, shape, sunlight, watering FROM flower")
+        flower_data = cur.fetchall()
+        cur.close()
+        # Pass the fetched data to the template
+        return render_template("/index.html", flowers=flower_data)
+    else:
+        return render_template("/login.html")
 
 @app.route('/login' , methods=['POST', 'GET'])
 def login():
     return addlogin()
- 
+@app.route('/nurserylogin' , methods=['POST', 'GET'])
+def nurserylogin():
+    return addnurserylogin()
+@app.route('/logout')
+def logout():
+    if 'id' in session:
+        # Print session ID before deletion (for debugging)
+     
+        session.pop('id', None)
+
+    
+    # Redirect to the login page or any other desired page
+    return render_template("/login.html") # Adjust 'login' to your actual login route
+# @app.route('/user', methods=['GET'])
+
+@app.route('/nurserylogout')
+def nurserylogout():
+    if 'id' in session:
+        # Print session ID before deletion (for debugging)
+     
+        session.pop('id', None)
+
+    
+    # Redirect to the login page or any other desired page
+    return render_template("/nursery/login.html")
+
+# def getFlowerdatainuserindex():
+#     # Establish a connection to the database
+#     cur = mysql.connection.cursor()
+#      # Fetch all flower plans from the database
+#     cur.execute("SELECT flower_id, flower_image_name, flower_name, flower_information, color, season, category, altitude, height, area, grow_time, pesticide, fertilizer, disease, fragrance, shape, sunlight, watering FROM flower")
+#     flower_data = cur.fetchall()
+
+#     # Close cursor and connection
+#     cur.close()
+   
+
+#     # Pass the fetched data to the template
+#     return render_template("user/index.html", flowers=flower_data)
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -229,15 +272,7 @@ def getFlowerdatainuserflower():
     cur.close()
     # Pass the fetched data to the template
     return render_template("user/flower.html", flowers=flower_data)
-@app.route('/user',methods=['GET'])
-def getFlowerdatainuserindex():
-     # Fetch all flower plans from the database
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT  flower_id ,flower_image_name, flower_name, flower_information, color, season, category, altitude, height, area,  grow_time, pesticide, fertilizer, disease, fragrance, shape, sunlight, watering FROM flower")
-    flower_data = cur.fetchall()
-    cur.close()
-    # Pass the fetched data to the template
-    return render_template("/user/index.html", flowers=flower_data)
+
 # @app.route('/user/flowersdetailsbyid/<int:id>', methods=['GET'])
 # def getFlowerdstails(id):
 #     try:
@@ -251,15 +286,7 @@ def getFlowerdatainuserindex():
 #     except ValueError:
 #         return "Invalid ID provided."
 
-@app.route('/user/index',methods=['GET'])
-def getFlowerdatainuser():
-     # Fetch all flower plans from the database
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT  flower_id ,flower_image_name, flower_name, flower_information, color, season, category, altitude, height, area,  grow_time, pesticide, fertilizer, disease, fragrance, shape, sunlight, watering FROM flower")
-    flower_data = cur.fetchall()
-    cur.close()
-    # Pass the fetched data to the template
-    return render_template("user/index.html", flowers=flower_data)
+
 @app.route('/nursery/flowers')
 def flowers_nursery():
     return render_template("nursery/flowers.html")
@@ -334,8 +361,18 @@ def getFlowerdatainurseryindex():
 # user///////////////////////////
 @app.route('/user')
 def user():
-    return render_template("user/index.html")
+    if 'id' in session: 
+        cur = mysql.connection.cursor()
+        # Fetch all flower plans from the database
+        cur.execute("SELECT flower_id, flower_image_name, flower_name, flower_information, color, season, category, altitude, height, area, grow_time, pesticide, fertilizer, disease, fragrance, shape, sunlight, watering FROM flower")
+        flower_data = cur.fetchall()
 
+        # Close cursor and connection
+        cur.close()
+        # Pass the fetched data to the template
+        return render_template("user/index.html", flowers=flower_data)
+    else:
+        return render_template("/login.html")
 @app.route('/user/flower')
 def userflower():
     return render_template("user/flower.html")
@@ -400,9 +437,9 @@ def nurserysignup():
         return nurserysignupform()
     return render_template("nursery/signup.html")
 
-@app.route('/nursery/login')
-def nurserylogin():
-    return render_template("nursery/login.html")
+# @app.route('/nursery/login')
+# def nurserylogin():
+#     return render_template("nursery/login.html")
 
 @app.route('/nursery/add-flower')
 def addflower():

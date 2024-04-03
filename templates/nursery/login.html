@@ -139,17 +139,18 @@
           src="{{ url_for('static', filename='/images/nursery.png')}}"
           alt="Rose Image"
         />
-        <form action="#">
+        <form action="/nurserylogin" method="POST">
           <div class="input-boxes">
             <div class="input-box">
               <i class="fas fa-envelope" style="font-size: 13px"></i>
-              <input type="text" placeholder="Enter your email" required />
+              <input type="text" name="email" placeholder="Enter your email" required />
             </div>
             <div class="input-box">
               <i class="fas fa-lock" style="font-size: 13px"></i>
               <input
                 type="password"
                 placeholder="Enter your password"
+                name="password"
                 required
               />
             </div>

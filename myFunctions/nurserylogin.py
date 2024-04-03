@@ -1,11 +1,11 @@
-from flask import Flask, request, render_template, session,redirect
+from flask import Flask, request, render_template, session, redirect
 import mysql.connector
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
-@app.route('/login', methods=['POST'])
-def addlogin():
+@app.route('/nurserylogin', methods=['POST'])
+def addnurserylogin():
     email = request.form.get('email')
     password = request.form.get('password')
     
@@ -17,7 +17,7 @@ def addlogin():
     )
     cur = conn.cursor()
  
-    query = "SELECT id FROM user WHERE email = %s AND password = %s"
+    query = "SELECT id FROM nursery_owner WHERE email = %s AND password = %s"
     cur.execute(query, (email, password))
     
     user_data = cur.fetchone()  # Fetch one row
@@ -29,8 +29,8 @@ def addlogin():
         session['id'] = user_data[0]  # Accessing the 'id' column value
         cur.close()
         conn.close()
-        return redirect('user')
+        return redirect('/nursery')
     else:  
         cur.close()
         conn.close()
-        return render_template("/login.html")
+        return render_template("/nursery/login.html")
