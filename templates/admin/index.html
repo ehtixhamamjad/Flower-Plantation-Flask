@@ -116,7 +116,7 @@
           href="{{ url_for('uploadimage') }}"
           class="fa-solid fa-camera-retro"
         ></a>
-        <a href="{{ url_for('adminlogin') }}" class="fa fa-sign-out"></a>
+        <a href="{{ url_for('adminlogout') }}" class="fa fa-sign-out"></a>
       </div>
     </header>
     <!--Header section ends-->
@@ -171,8 +171,32 @@
     <!--icons section ends-->
 
     <!--Products section stars-->
-
     <section class="products" id="products">
+      <h1 class="heading">lates <span>Flowers</span></h1>
+      <div class="box-container">
+          {% for flower in flowers %}
+          <div class="box">
+              <span class="discount">{{ flower[0] }}</span>
+             
+              <div class="image">
+                  <img src="{{ url_for('static', filename='images/' + flower[1]) }}" alt="">
+
+                  <div class="icons">
+                      <!-- <a href="#" class="fas fa-heart"></a> -->
+                      <a href="#"></a>
+                      <a href="flowerdetails/{{flower[0]}}" class="fas fa-share"></a>
+                  </div>
+              </div>
+              <div class="content">
+                  <h3>{{flower[2]}}</h3>
+                  <div class="price">{{flower[9]}}</div>
+              </div>
+          </div>
+          {% endfor %}
+          </div>
+      </div>
+  </section>
+    <!-- <section class="products" id="products">
       <h1 class="heading">latest <span>Flowers</span></h1>
       <div class="box-container">
         <div class="box">
@@ -403,7 +427,7 @@
           </div>
         </div>
       </div>
-    </section>
+    </section> -->
     <!--Products section ends-->
 
     <!--footer section starts-->

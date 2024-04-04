@@ -155,7 +155,7 @@ def index():
 
 @app.route('/', methods=['GET'])
 def getFlowerdataindex():
-    if 'id' in session:  # Assuming 'id' is stored in the session when the user is logged in
+      # Assuming 'id' is stored in the session when the user is logged in
         # Fetch all flower plans from the database
         cur = mysql.connection.cursor()
         cur.execute("SELECT flower_id, flower_image_name, flower_name, flower_information, color, season, category, altitude, height, area, grow_time, pesticide, fertilizer, disease, fragrance, shape, sunlight, watering FROM flower")
@@ -163,8 +163,7 @@ def getFlowerdataindex():
         cur.close()
         # Pass the fetched data to the template
         return render_template("/index.html", flowers=flower_data)
-    else:
-        return render_template("/login.html")
+   
 
 @app.route('/login' , methods=['POST', 'GET'])
 def login():
@@ -176,13 +175,12 @@ def nurserylogin():
 def logout():
     if 'id' in session:
         # Print session ID before deletion (for debugging)
-     
-        session.pop('id', None)
+        print("Session ID before logout:", session['id'])
+        # Remove user ID from session
+        session.pop('id')
 
-    
-    # Redirect to the login page or any other desired page
-    return render_template("/login.html") # Adjust 'login' to your actual login route
-# @app.route('/user', methods=['GET'])
+    # Redirect to the login page
+    return redirect(url_for('login'))
 
 @app.route('/nurserylogout')
 def nurserylogout():
@@ -219,8 +217,8 @@ def signup():
 def uploadimage():
     return render_template("upload-img.html")    
 
-@app.route('/flowerdetails/<int:id>', methods=['GET'])
-def flowerdetail(id):
+@app.route('/flowerdetails/<int:id>', methods=['GET','POST'])
+def flowerdetails(id):
 # @app.route('/user/flowersdetailsbyid/<int:id>', methods=['GET'])
     try:
         # Fetch flower details from the database based on the provided ID
@@ -349,6 +347,7 @@ def deleteflower(id):
 
 @app.route('/nursery',methods=['GET'])
 def getFlowerdatainurseryindex():
+ if 'id' in session: 
      # Fetch all flower plans from the database
     cur = mysql.connection.cursor()
     cur.execute("SELECT  flower_id ,flower_image_name, flower_name, flower_information, color, season, category, altitude, height, area,  grow_time, pesticide, fertilizer, disease, fragrance, shape, sunlight, watering FROM flower")
@@ -356,7 +355,20 @@ def getFlowerdatainurseryindex():
     cur.close()
     # Pass the fetched data to the template
     return render_template("/nursery/index.html", flowers=flower_data)
-
+ else:
+    return render_template("nursery/login.html")
+@app.route('/nursery',methods=['GET'])
+def nursery():
+ if 'id' in session: 
+     # Fetch all flower plans from the database
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT  flower_id ,flower_image_name, flower_name, flower_information, color, season, category, altitude, height, area,  grow_time, pesticide, fertilizer, disease, fragrance, shape, sunlight, watering FROM flower")
+    flower_data = cur.fetchall()
+    cur.close()
+    # Pass the fetched data to the template
+    return render_template("/nursery/index.html", flowers=flower_data)
+ else:
+    return render_template("nursery/login.html")
 
 # user///////////////////////////
 @app.route('/user')
@@ -419,18 +431,63 @@ def deleteflowerplan(id):
    
 @app.route('/user/favourite')
 def userfavourite():
-    return render_template("user/favourite.html")
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM favorite_flower")
+    existing_flowers = cur.fetchall()  # Use fetchall() to fetch all rows
+    cur.close()
+    return render_template("/user/favourite.html", flowers=existing_flowers)
+@app.route('/addfvtfavourite/<int:id>')
+def addfvtfavourite(id):
+    flower = Flower.query.filter_by(flower_id=id).first()  # Retrieve the flower data by ID
+    if flower:
+        # Check if the flower ID already exists in favorite_flower table
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM favorite_flower WHERE flower_id = %s", (flower.flower_id,))
+        existing_flower = cur.fetchone()
+        
+        if not existing_flower:
+            # If the flower ID does not exist, insert it into the user's favorites
+            cur.execute("INSERT INTO favorite_flower (flower_id, flower_image_name, flower_name) VALUES (%s, %s, %s)", (flower.flower_id, flower.flower_image_name, flower.flower_name))
+            mysql.connection.commit()  # Commit the transaction
+        
+        # Retrieve all favorite flowers after the insertion (including the newly inserted one)
+        cur.execute("SELECT * FROM favorite_flower")
+        fvtflowerdata = cur.fetchall()  # Fetch all rows of the query result
+        
+        cur.close()
+        # Render the user's favorites page with the updated list of favorite flowers
+        return render_template('user/favourite.html', flowers=fvtflowerdata)
+        
+    else:
+        # Flower with the specified ID does not exist
+        return redirect(url_for('user'))
 
-
+@app.route('/deletefvtflower/<int:id>')
+def deletefvtflower(id):
+    cur = mysql.connection.cursor()
+    
+    # Check if the flower exists in the favorite_flower table
+    cur.execute("SELECT * FROM favorite_flower WHERE flower_id = %s", (id,))
+    existing_flower = cur.fetchone()
+    
+    if existing_flower:
+        # If the flower exists in favorites, delete it
+        cur.execute("DELETE FROM favorite_flower WHERE flower_id = %s", (id,))
+        mysql.connection.commit()  # Commit the transaction
+        
+    cur.close()
+    return redirect(url_for('user'))
 @app.route('/user/notification')
 def usernotification():
     return render_template("user/notification.html")
 
 # nursery////////////////////////////
-@app.route('/nursery')
-def nursery():
-    return render_template("nursery/index.html")
-
+# @app.route('/nursery')
+# def nursery():
+#  if 'id' in session:
+#     return render_template("nursery/index.html")
+#  else:
+#         return render_template("nursery/login.html")
 @app.route('/nursery/signup', methods=['GET', 'POST'])
 def nurserysignup():
     if request.method == 'POST':
@@ -460,21 +517,48 @@ def addlocation():
 # admin ///////////////////////////////////
 @app.route('/admin')
 def admin():
-    return render_template("admin/index.html")
+    if 'admin_id' in session:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT  flower_id ,flower_image_name, flower_name, flower_information, color, season, category, altitude, height, area,  grow_time, pesticide, fertilizer, disease, fragrance, shape, sunlight, watering FROM flower")
+        flower_data = cur.fetchall()
+        cur.close()
+        # Pass the fetched data to the template
+        return render_template("admin/index.html", flowers=flower_data)
+    else:
+        return redirect(url_for('adminlogin'))
 
 @app.route('/admin/signup')
 def adminsignup():
     return render_template("admin/signup.html")
-
-@app.route('/admin/login')
+@app.route('/admin/login', methods=["GET", "POST"])
 def adminlogin():
-    return render_template("admin/login.html")    
+    if request.method == "POST":
+        email = request.form.get('email')
+        password = request.form.get('password')
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT id, username, email, password FROM admin WHERE email = %s", (email,))
+        admin_data = cur.fetchone()
+        cur.close()
+        
+        if admin_data and password == admin_data[3]:
+            session['admin_id'] = admin_data[0]  # Store admin's ID in the session
+            return redirect(url_for('admin'))
+        else:
+            return render_template("admin/login.html")
+    else:
+        return render_template("admin/login.html")
+    
+
+@app.route('/adminlogout')
+def adminlogout():
+    session.pop('admin_id', None)  # Corrected the session key and None
+    return redirect(url_for('adminlogin')) 
 
 @app.route('/admin/user' ,methods=['GET'])
 def adminuserinfo():
     try:
         cur = mysql.connection.cursor()
-        cur.execute("SELECT id, name, phone, city, email FROM user")
+        cur.execute("SELECT id, name, phone, area, email FROM user")
         all_user = cur.fetchall()
         cur.close()
         return render_template("admin/user.html", all_users=all_user)

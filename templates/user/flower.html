@@ -61,14 +61,14 @@
                     <img src="{{ url_for('static', filename='images/' + flower[1]) }}" alt="">
 
                     <div class="icons">
-                        <a href="#" class="fas fa-heart"></a>
-                        <a href="#" class="cart-btn"></a>
-                        <a href="flowerdetails/{{flower[0]}}" class="fas fa-share"></a>
+                        <a href="{{ url_for( 'addfvtfavourite', id=flower[0]) }}" class="fas fa-heart"></a>
+                        <!-- <a href="#" class="fas fa-delete"></a> -->
+                        <a href="{{ url_for('flowerdetails', id=flower[0]) }}" class="fas fa-share"></a>
                     </div>
                 </div>
                 <div class="content">
                     <h3>{{flower[2]}}</h3>
-                    <div class="price">{{flower[3]}}</div>
+                    <div class="price">{{flower[9]}}</div>
                 </div>
             </div>
             {% endfor %}

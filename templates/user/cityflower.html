@@ -62,8 +62,8 @@
 
                     <div class="icons">
                         <a href="#" class="fas fa-heart"></a>
-                        <a href="#" class="cart-btn"></a>
-                        <a href="flowersdetailsbyid/{{flower[0]}}" class="fas fa-share"></a>
+                        <!-- <a href="#" class="cart-btn"></a> -->
+                        <a href="{{ url_for('flowerdetails', id=flower[0]) }}" class="fas fa-share"></a>
                     </div>
                 </div>
                 <div class="content">
