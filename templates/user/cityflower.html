@@ -38,7 +38,7 @@
         <a href="{{ url_for('user') }}" class="logo">Flower Plantation<span>.</span></a>
         <nav class="navbar">
             <a href="{{ url_for('user') }}">Home</a>
-
+            <a href="{{ url_for('cityflower') }}">City-flower</a>
             <a href="{{ url_for('userflower') }}">Flowers</a>
             <a href="{{ url_for('userplan') }}">Flower Plan</a>
         </nav>
@@ -46,63 +46,12 @@
             <a href="{{ url_for('usernotification') }}" class="fa-solid fa-bell"></a>
             <a href="{{ url_for('userfavourite') }}" class="fas fa-heart"></a>
             <a href="{{ url_for('uploadimage') }}" class="fa-solid fa-camera-retro"></a>
-            <a href="{{ url_for('login') }}" class="fa fa-sign-out"></a>
+            <a href="{{ url_for('logout') }}" class="fa fa-sign-out"></a>
         </div>
     </header>
-    <!--Header section ends-->
-
-
-    <!--Home section starts-->
-    <section class="home" id="home">
-        <div class="content">
-            <h3>Fresh Flowers</h3>
-            <span>Natural & beautiful flowers</span>
-            <p>Fresh flowers, a testament to nature's artistry, adorn every corner,
-                Their natural allure, a symphony of colors, a canvas of life's own painter.
-                Each bloom whispers tales of beauty, inviting admiration, stirring the soul.</p>
-            <!-- <a href="#products" class="btn"> Shop Now</a> -->
-        </div>
-    </section>
-
-
-    <!--Home section ends-->
-    <!--icons section starts-->
-    <section class="icons-container">
-        <div class="icons">
-            <img src="{{ url_for('static', filename='/images/icon-1.png')}}" alt="">
-            <div class="info">
-                <h3>Gardening Tips</h3>
-                <span>Expert garden advice</span>
-            </div>
-        </div>
-
-        <div class="icons">
-            <img src="{{ url_for('static', filename='/images/icon-2.png')}}" alt="">
-            <div class="info">
-                <h3>Flower Care</h3>
-                <span>Seasonal care guides</span>
-            </div>
-        </div>
-
-        <div class="icons">
-            <img src="{{ url_for('static', filename='/images/icon-3.png')}}" alt="">
-            <div class="info">
-                <h3>Arrangement Ideas</h3>
-                <span>Inspiring floral designs</span>
-            </div>
-        </div>
-
-        <div class="icons">
-            <img src="{{ url_for('static', filename='/images/icon-4.png')}}" alt="">
-            <div class="info">
-                <h3>Plant ID</h3>
-                <span>Identify plants easily</span>
-            </div>
-        </div>
-    </section>
-    
+<br><br><br><br><br>
     <section class="products" id="products">
-        <h1 class="heading">latest <span>Flowers</span></h1>
+        <h1 class="heading">City <span>Flowers</span></h1>
         <div class="box-container">
             {% for flower in flowers %}
             <div class="box">
