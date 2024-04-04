@@ -23,14 +23,10 @@
             color: #333;
             margin-left:4.5rem;
         }
-    
     }
-
     </style>
 </head>
-
 <body>
-
     <!--Header section starts-->
     <header>
         <input type="checkbox" name="" id="toggler">
@@ -53,7 +49,7 @@
 
 
     <!--Home section starts-->
-    <section class="home" id="home">
+    <section class="home-user" id="home">
         <div class="content">
             <h3>Fresh Flowers</h3>
             <span>Natural & beautiful flowers</span>
@@ -85,7 +81,6 @@
             <td>{{ flower[16] }}</td>
             <td>{{ flower[17] }}</td>
             <td>{{ flower[18] }}</td>
-
             <td>
               <button class="up-btn-black">
                 <a href="{{ url_for('editflower', id=flower[0]) }}" style="color: #fff;">Edit</a>
@@ -98,11 +93,7 @@
           </td>
         </tr>
         {% endfor %}
-
-
-
     </tbody> -->
-
     <!--Home section ends-->
     <!--icons section starts-->
     <section class="icons-container">
@@ -113,7 +104,6 @@
                 <span>Expert garden advice</span>
             </div>
         </div>
-
         <div class="icons">
             <img src="{{ url_for('static', filename='/images/icon-2.png')}}" alt="">
             <div class="info">

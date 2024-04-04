@@ -139,6 +139,39 @@ header .fa-bars{
     line-height: 1.5;
 }
 
+/* user home */
+.home-user{
+    display: flex;
+    align-items: center;
+    min-height: 100vh;
+    background: url(./images/flower-background-user.png) no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.home-user .content{
+    max-width: 50rem;
+}
+
+.home-user .content h3{
+    font-size: 6rem;
+    color: #333;
+}
+
+.home-user .content span{
+    font-size: 3.5rem;
+    color:var(--pink);
+    padding: 1rem 0;
+    line-height: 1.5;
+}
+
+.home-user .content p{
+    font-size: 2rem;
+    color:#999;
+    padding: 1rem 0;
+    line-height: 1.5;
+}
+
 .about .row{
     display: flex;
     align-items: center;
