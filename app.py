@@ -165,12 +165,22 @@ def getFlowerdataindex():
         return render_template("/index.html", flowers=flower_data)
    
 
-@app.route('/login' , methods=['POST', 'GET'])
+@app.route('/login', methods=['POST', 'GET'])
 def login():
-    return addlogin()
+    if request.method == 'POST':
+        return addlogin()
+    else:
+        # Handle GET request
+        # For example, render the login form
+        return render_template("login.html")
+
+
+
 @app.route('/nurserylogin' , methods=['POST', 'GET'])
 def nurserylogin():
     return addnurserylogin()
+
+
 @app.route('/logout')
 def logout():
     if 'id' in session:
