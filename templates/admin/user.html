@@ -152,7 +152,6 @@
             <th>Phone</th>
             <th>Location</th>
             <th>Email</th>
-            <th>Update</th>
             <th>Delete</th>
           </tr>
         </thead>
@@ -165,10 +164,9 @@
             <td>{{ user[3] }}</td>
             <td>{{ user[4] }}</td>
             <td>
-              <!-- <button class="update-btn-black" onclick="updateUser({{ user.id }})">Update</button> -->
-            </td>
-            <td>
-              <!-- <button class="del-btn-black" onclick="deleteUser({{ user.id }})">Delete</button> -->
+              <button class="del-btn-black">
+                <a href="{{ url_for('delete_user_by_admin', id=user[0]) }}" style="color: #fff">Delete</a>
+              </button>
             </td>
           </tr>
           {% endfor %} {% with messages = get_flashed_messages() %} {% if

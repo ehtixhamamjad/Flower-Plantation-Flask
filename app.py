@@ -37,7 +37,8 @@ class User(db.Model):
 
 class Flower(db.Model):
     __tablename__ = 'flower'
-    flower_id = db.Column(db.Integer, primary_key=True)  # Added Flower id
+    flower_id = db.Column(db.Integer, primary_key=True) 
+    # flower_nursery = db.Column(db.Integer,nullable=True) # Added Flower id
     flower_image_name = db.Column(db.String(225), unique=False, nullable=True)
     flower_name = db.Column(db.String(225), unique=False, nullable=True)
     flower_information = db.Column(db.String(225), unique=False, nullable=True)  # Changed to flower_information
@@ -84,69 +85,7 @@ app.config['MYSQL_PASSWORD']=''
 app.config['MYSQL_DB']='flowerplantation'
 mysql = MySQL(app)
 
-# # Define predict_class function
-# def predict_class(model, image_path):
-#     # Load the image
-#     img = load_img(image_path, target_size=(64, 64))
-#     # Convert the image to a numpy array
-#     img_array = img_to_array(img)
-#     # Rescale the image
-#     img_array = img_array / 255.0
-#     # Expand dimensions to match the model's expected input shape
-#     img_array = np.expand_dims(img_array, axis=0)
-#     # Make a prediction
-#     prediction = model.predict(img_array)
-#     # Get the index of the highest probability
-#     predicted_class_index = np.argmax(prediction)
-#     return predicted_class_index
 
-# # Load the model
-# model_file_path = 'model.h5'
-# model = load_model(model_file_path)
-
-# # Define class_indices
-# class_indices = {
-#     0: 'Daisy',
-#     1: 'Dandelion',
-#     2: 'Rose',
-#     3: 'SunFlower',
-#     4: 'Tulip'
-# }
-
-# UPLOAD_FOLDER = 'uploads'
-# ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-
-# app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-# def allowed_file(filename):
-#     return '.' in filename and \
-#            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-# @app.route('/predict', methods=['GET', 'POST'])
-# def predict():
-#     if request.method == 'POST':
-#         if 'image' not in request.files:
-#             return redirect(request.url)
-#         file = request.files['image']
-#         if file.filename == '':
-#             return redirect(request.url)
-#         if file and allowed_file(file.filename):
-#             filename = secure_filename(file.filename)
-#             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-#             predicted_class_index = predict_class(model, os.path.join(app.config['UPLOAD_FOLDER'], filename))
-#             # Check if predicted_class_index is in class_indices
-#             if predicted_class_index in class_indices:
-#                 class_name = class_indices[predicted_class_index]
-#             else:
-#                 # Handle the case where predicted_class_index is not found in class_indices
-#                 class_name = "Unknown"
-#             return render_template('result.html', class_name=class_name)
-#     return redirect(url_for('home_page'))
-# @app.route('/uploads/<filename>')
-# def uploaded_file(filename):
-#     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
-
-# all routes
 # main
 @app.route('/index')
 def index():
@@ -201,21 +140,8 @@ def nurserylogout():
 
     
     # Redirect to the login page or any other desired page
-    return render_template("/nursery/login.html")
+    return redirect(url_for('nurserylogin'))
 
-# def getFlowerdatainuserindex():
-#     # Establish a connection to the database
-#     cur = mysql.connection.cursor()
-#      # Fetch all flower plans from the database
-#     cur.execute("SELECT flower_id, flower_image_name, flower_name, flower_information, color, season, category, altitude, height, area, grow_time, pesticide, fertilizer, disease, fragrance, shape, sunlight, watering FROM flower")
-#     flower_data = cur.fetchall()
-
-#     # Close cursor and connection
-#     cur.close()
-   
-
-#     # Pass the fetched data to the template
-#     return render_template("user/index.html", flowers=flower_data)
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -251,25 +177,7 @@ def getFlowerdata():
     # Pass the fetched data to the template
     return render_template("nursery/flowers.html", flowers=flower_data)
 
-@app.route('/user/cityflower',methods=['GET'])
-def getFlowerdataincityflower():
-     # Fetch all flower plans from the database
-    userid = session.get('id') 
-    if userid is not None:
-        cur = mysql.connection.cursor()
-        cur.execute("SELECT area FROM user WHERE id = %s", (userid,))
-        flower_area = cur.fetchone()[0]  # Fetch a single row and first column value
 
-        cur.execute("SELECT flower_id, flower_image_name, flower_name, flower_information, color, season, category, altitude, height, area, grow_time, pesticide, fertilizer, disease, fragrance, shape, sunlight, watering FROM flower WHERE area = %s", (flower_area,))
-
-        flower_data = cur.fetchall()
-        cur.close()
-        
-        # Pass the fetched data to the template
-        return render_template("/user/cityflower.html", flowers=flower_data)
-    else:
-        # Handle case where 'id' is not found in session
-        return "User ID not found in session"
 
 @app.route('/user/flower',methods=['GET'])
 def getFlowerdatainuserflower():
@@ -281,19 +189,6 @@ def getFlowerdatainuserflower():
     # Pass the fetched data to the template
     return render_template("user/flower.html", flowers=flower_data)
 
-# @app.route('/user/flowersdetailsbyid/<int:id>', methods=['GET'])
-# def getFlowerdstails(id):
-#     try:
-#         # Fetch flower details from the database based on the provided ID
-#         flower_data = Flower.query.filter_by(flower_id=id).first()
-#         if flower_data:
-#             # Pass the fetched data to the template
-#             return render_template("user/flowersdetailsbyid.html", flower=flower_data)
-#         else:
-#             return "Flower not found."
-#     except ValueError:
-#         return "Invalid ID provided."
-
 
 @app.route('/nursery/flowers')
 def flowers_nursery():
@@ -302,9 +197,8 @@ def flowers_nursery():
 @app.route('/editflower/<int:id>', methods=['GET', 'POST'])
 def editflower(id):
     flower_data = Flower.query.filter_by(flower_id=id).first()
-    # return redirect(url_for('editflower', id=flower_data.flower_id))
     return render_template("nursery/editflower.html", flowers=flower_data)
-    # return render_template("user/editplan.html", flower_plans=plan_data)
+   
   
 
 @app.route('/nursery/flowers',methods=['GET'])
@@ -356,18 +250,6 @@ def deleteflower(id):
     return render_template("nursery/flowers.html")
 
 @app.route('/nursery',methods=['GET'])
-def getFlowerdatainurseryindex():
- if 'id' in session: 
-     # Fetch all flower plans from the database
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT  flower_id ,flower_image_name, flower_name, flower_information, color, season, category, altitude, height, area,  grow_time, pesticide, fertilizer, disease, fragrance, shape, sunlight, watering FROM flower")
-    flower_data = cur.fetchall()
-    cur.close()
-    # Pass the fetched data to the template
-    return render_template("/nursery/index.html", flowers=flower_data)
- else:
-    return render_template("nursery/login.html")
-@app.route('/nursery',methods=['GET'])
 def nursery():
  if 'id' in session: 
      # Fetch all flower plans from the database
@@ -415,17 +297,6 @@ def userplan():
 @app.route('/user/add-plan', methods=['GET', 'POST'])
 def addflowerplan():
     return userAddPlanFun()
-    
-
-@app.route('/nursery/add-flower', methods=['GET', 'POST'])
-def addflowerdata():
-    return addFlowerfun()
-
-# @app.route('/editplan/<int:id>', methods=['GET', 'POST'])
-# def editplan(id):
-#     plan=Plan.query.filter_by(plan_id=id).first()
-#     # name=Plan.query.filter_by(plan_id=id).first
-#     return render_template("user/editplan.html",flower_plans=plan)
 
 @app.route('/editplan/<int:id>', methods=['GET', 'POST'])
 def editflowerplan(id):
@@ -445,7 +316,8 @@ def userfavourite():
     cur.execute("SELECT * FROM favorite_flower")
     existing_flowers = cur.fetchall()  # Use fetchall() to fetch all rows
     cur.close()
-    return render_template("/user/favourite.html", flowers=existing_flowers)
+
+
 @app.route('/addfvtfavourite/<int:id>')
 def addfvtfavourite(id):
     flower = Flower.query.filter_by(flower_id=id).first()  # Retrieve the flower data by ID
@@ -471,6 +343,25 @@ def addfvtfavourite(id):
     else:
         # Flower with the specified ID does not exist
         return redirect(url_for('user'))
+@app.route('/user/cityflower',methods=['GET'])
+def getFlowerdataincityflower():
+     # Fetch all flower plans from the database
+    userid = session.get('id') 
+    if userid is not None:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT area FROM user WHERE id = %s", (userid,))
+        flower_area = cur.fetchone()[0]  # Fetch a single row and first column value
+
+        cur.execute("SELECT flower_id, flower_image_name, flower_name, flower_information, color, season, category, altitude, height, area, grow_time, pesticide, fertilizer, disease, fragrance, shape, sunlight, watering FROM flower WHERE area = %s", (flower_area,))
+
+        flower_data = cur.fetchall()
+        cur.close()
+        
+        # Pass the fetched data to the template
+        return render_template("/user/cityflower.html", flowers=flower_data)
+    else:
+        # Handle case where 'id' is not found in session
+        return "User ID not found in session"
 
 @app.route('/deletefvtflower/<int:id>')
 def deletefvtflower(id):
@@ -487,26 +378,20 @@ def deletefvtflower(id):
         
     cur.close()
     return redirect(url_for('user'))
+    
+@app.route('/nursery/add-flower', methods=['GET', 'POST'])
+def addflowerdata():
+    return addFlowerfun()
+
 @app.route('/user/notification')
 def usernotification():
     return render_template("user/notification.html")
 
-# nursery////////////////////////////
-# @app.route('/nursery')
-# def nursery():
-#  if 'id' in session:
-#     return render_template("nursery/index.html")
-#  else:
-#         return render_template("nursery/login.html")
 @app.route('/nursery/signup', methods=['GET', 'POST'])
 def nurserysignup():
     if request.method == 'POST':
         return nurserysignupform()
     return render_template("nursery/signup.html")
-
-# @app.route('/nursery/login')
-# def nurserylogin():
-#     return render_template("nursery/login.html")
 
 @app.route('/nursery/add-flower')
 def addflower():
@@ -581,7 +466,7 @@ app.secret_key = 'your_secret_key_here'
 def adminnurseryinfo():
     try:
         cur = mysql.connection.cursor()
-        cur.execute("SELECT id, name, address, city, zip, Country, phone, email FROM nursery_owner")
+        cur.execute("SELECT id, name, address, city, zip, Country, phone, email,password FROM nursery_owner")
         all_nursery = cur.fetchall()
         cur.close()
         return render_template("admin/nursery.html", all_nurserys=all_nursery)
@@ -612,8 +497,36 @@ def updateplan(id):
     
     # Render the edit plan form with the existing plan data
     return render_template("user/editplan.html", flower_plans=plan_data)
-
-
+@app.route('/admin/user/<int:id>')
+def delete_user_by_admin(id):
+    cur = mysql.connection.cursor()
+    
+    # Check if the user exists in the user table
+    cur.execute("SELECT * FROM user WHERE id = %s", (id,))
+    existing_user = cur.fetchone()
+    
+    if existing_user:
+        # If the user exists, delete it
+        cur.execute("DELETE FROM user WHERE id = %s", (id,))
+        mysql.connection.commit()  # Commit the transaction
+        
+    cur.close()
+    return redirect(url_for('adminuserinfo'))
+@app.route('/admin/nusery/<int:id>')
+def delete_nursery_by_admin(id):
+    cur = mysql.connection.cursor()
+    
+    # Check if the user exists in the user table
+    cur.execute("SELECT * FROM nursery_owner WHERE id = %s", (id,))
+    existing_user = cur.fetchone()
+    
+    if existing_user:
+        # If the user exists, delete it
+        cur.execute("DELETE FROM nursery_owner WHERE id = %s", (id,))
+        mysql.connection.commit()  # Commit the transaction
+        
+    cur.close()
+    return redirect(url_for('adminnurseryinfo'))
 app.run(debug=True)
 if __name__ == '__main__':
     app.run(debug=True)

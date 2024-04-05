@@ -99,11 +99,35 @@
           font-size: 12px !important;
           padding: 8px 10px;
         }
+        
 
         .tablecontainer {
           padding: 10px;
         }
       }
+
+      .del-btn:hover {
+        background-color: #333333;
+        color: white;
+        border-radius: 10px;
+        padding: 5px 10px;
+      }
+
+      .del-btn-black {
+        background-color: #333333;
+        color: white;
+        border-radius: 10px;
+        padding: 5px 10px;
+      }
+
+      .del-btn-black:hover {
+        background-color: #e84393;
+        color: white;
+        border-radius: 10px;
+        padding: 5px 10px;
+      }
+
+      
     </style>
   </head>
 
@@ -146,7 +170,7 @@
             <th>Country</th>
             <th>Phone</th>
             <th>Email</th>
-            <th>Update</th>
+            <th>password</th>
             <th>Delete</th>
           </tr>
         </thead>
@@ -162,14 +186,11 @@
             <td>{{ nursery[6] }}</td>
             <td>{{ nursery[7] }}</td>
             <td>{{ nursery[8] }}</td>
-            <td>{{ nursery[9] }}</td>
             <td>
-              <!-- <button class="update-btn-black" onclick="updateUser({{ nursery.id }})">Update</button> -->
-            </td>
-            <td>
-              <!-- <button class="del-btn-black" onclick="deleteUser({{ nursery.id }})">Delete</button> -->
-            </td>
-          </tr>
+              <button class="del-btn-black">
+                <a href="{{ url_for('delete_nursery_by_admin', id=nursery[0]) }}" style="color: #fff">Delete</a>
+              </button>
+            </td></tr>
           {% endfor %} {% with messages = get_flashed_messages() %} {% if
             messages %}
             <ul class="flash-messages">
