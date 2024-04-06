@@ -218,7 +218,7 @@
   <!-- Image Details section start-->
   <section class="content" style="margin-top: 100px;">
     <div>
-      <h1 class="heading"><span>Tulip</span></h1>
+      <h1 class="heading"><span>{{ flower.flower_name }}</span></h1>
       <img src=" {{ url_for('static', filename='images/' +flower.flower_image_name) }}" alt="" />
 
       <!--icons section starts-->
@@ -399,20 +399,17 @@
       <div class="image-details">
         <h1 style="color: #e84393;">
           <!-- Let’s explore the colorful world of Tulip Flowers -->
-          Tulip Flower
+          {{ flower.flower_name }}
+
+          <!-- Tulip Flower -->
         </h1>
-        <p>Tulips are among the most beloved and iconic spring flowers, renowned for their exquisite beauty and vibrant
-          colors. Native to Central Asia and Turkey, tulips belong to the genus Tulipa and are part of the Liliaceae
-          family. They are characterized by their cup-shaped blooms and long, slender stems, making them a popular
-          choice for floral arrangements and garden displays.</p>
+        <p>
+        {{ flower.flower_information}}
+        </p>
         <p>With a wide range of hues including red, yellow, pink, purple, and white, tulips offer a kaleidoscope of
           color to brighten any landscape. They typically bloom in spring, signaling the arrival of warmer weather and
           the rejuvenation of nature after the winter months. Tulips are often associated with love, passion, and
           elegance, making them a favorite choice for romantic gestures and special occasions.</p>
-        <p>One of the most famous episodes in tulip history is the "Tulip Mania" of the 17th century in the Netherlands,
-          during which tulip bulbs became incredibly valuable and were even traded as currency. Today, tulips remain a
-          beloved symbol of springtime and renewal, captivating gardeners and flower enthusiasts around the world with
-          their timeless beauty and charm.</p>
         </p>
       </div>
     </div>
