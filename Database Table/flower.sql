@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 03, 2024 at 10:27 AM
+-- Generation Time: Apr 06, 2024 at 04:09 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.1.25
 
@@ -29,6 +29,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `flower` (
   `flower_id` int(11) NOT NULL,
+  `flower_nursery_id` int(12) NOT NULL,
   `flower_image_name` varchar(250) DEFAULT NULL,
   `flower_name` varchar(255) DEFAULT NULL,
   `flower_information` varchar(255) DEFAULT NULL,
@@ -52,14 +53,18 @@ CREATE TABLE `flower` (
 -- Dumping data for table `flower`
 --
 
-INSERT INTO `flower` (`flower_id`, `flower_image_name`, `flower_name`, `flower_information`, `color`, `season`, `category`, `altitude`, `height`, `area`, `grow_time`, `pesticide`, `fertilizer`, `disease`, `fragrance`, `shape`, `sunlight`, `watering`) VALUES
-(31, 'f1.jpeg', 'rose', 'info', 'red', 'Summer', 'outdoor', 1, 1, 'faisalabad', '2', 'pesticide', 'fertilizer', 'disease', 'fragrance', 'shape', 'sunlight', 'water'),
-(32, 'f1.jpeg', 'rose', 'info', 'red', 'Summer', 'outdoor', 1, 1, 'faisalabad', '2', 'pesticide', 'fertilizer', 'disease', 'fragrance', 'shape', 'sunlight', 'water'),
-(33, 'f2.jpeg', 'petal', 'info', 'yellow', 'Autumn', 'outdoor', 1, 1, 'lahore', '2', 'pesticide', 'fert', 'dis', 'frag', 'shape', 'sun', 'water'),
-(34, 'f2.jpeg', 'petal', 'info', 'yellow', 'Autumn', 'outdoor', 1, 1, 'lahore', '2', 'pesticide', 'fert', 'dis', 'frag', 'shape', 'sun', 'water'),
-(35, 'f2.jpeg', 'petal', 'info', 'yellow', 'Autumn', 'outdoor', 1, 1, 'lahore', '2', 'pesticide', 'fert', 'dis', 'frag', 'shape', 'sun', 'water'),
-(36, 'f2.jpeg', 'petal', 'info', 'yellow', 'Autumn', 'outdoor', 1, 1, 'lahore', '2', 'pesticide', 'fert', 'dis', 'frag', 'shape', 'sun', 'water'),
-(37, 'f2.jpeg', 'petal', 'info', 'yellow', 'Autumn', 'outdoor', 1, 1, 'islamabad', '2', 'pesticide', 'fert', 'dis', 'frag', 'shape', 'sun', 'water');
+INSERT INTO `flower` (`flower_id`, `flower_nursery_id`, `flower_image_name`, `flower_name`, `flower_information`, `color`, `season`, `category`, `altitude`, `height`, `area`, `grow_time`, `pesticide`, `fertilizer`, `disease`, `fragrance`, `shape`, `sunlight`, `watering`) VALUES
+(31, 0, 'f1.jpeg', 'rose', 'info', 'red', 'Summer', 'outdoor', 1, 1, 'faisalabad', '2', 'pesticide', 'fertilizer', 'disease', 'fragrance', 'shape', 'sunlight', 'water'),
+(33, 0, 'f2.jpeg', 'petal', 'info', 'yellow', 'Autumn', 'outdoor', 1, 1, 'lahore', '2', 'pesticide', 'fert', 'dis', 'frag', 'shape', 'sun', 'water'),
+(34, 0, 'f2.jpeg', 'petal', 'info', 'yellow', 'Autumn', 'outdoor', 1, 1, 'lahore', '2', 'pesticide', 'fert', 'dis', 'frag', 'shape', 'sun', 'water'),
+(35, 0, 'f2.jpeg', 'petal', 'info', 'yellow', 'Autumn', 'outdoor', 1, 1, 'lahore', '2', 'pesticide', 'fert', 'dis', 'frag', 'shape', 'sun', 'water'),
+(36, 0, 'f2.jpeg', 'petal', 'info', 'yellow', 'Autumn', 'outdoor', 1, 1, 'lahore', '2', 'pesticide', 'fert', 'dis', 'frag', 'shape', 'sun', 'water'),
+(37, 0, 'f2.jpeg', 'petal', 'info', 'yellow', 'Autumn', 'outdoor', 1, 1, 'islamabad', '2', 'pesticide', 'fert', 'dis', 'frag', 'shape', 'sun', 'water'),
+(38, 2, 'f2.jpeg', 'z', 'z', 'z', 'Winter', 'outdoor', 1, 1, 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z'),
+(39, 2, 'f2.jpeg', 'z', 'z', 'z', 'Winter', 'outdoor', 1, 1, 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z'),
+(40, 2, 'f2.jpeg', 'z', 'z', 'z', 'Winter', 'outdoor', 1, 1, 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z'),
+(41, 6, 'f1.jpeg', 'a', 'a', 'a', 'Autumn', 'outdoor', 1, 1, 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'),
+(45, 19, 'f1.jpeg', 'v', 'vd', 'd', 'Summer', 'outdoor', 3, 4, 'Karachi', 'w', 'd', 'w', 'd', 'd', 'd', 'd', 'd');
 
 --
 -- Indexes for dumped tables
@@ -79,7 +84,7 @@ ALTER TABLE `flower`
 -- AUTO_INCREMENT for table `flower`
 --
 ALTER TABLE `flower`
-  MODIFY `flower_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `flower_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for,session
 from flask_mysqldb import MySQL
 
 app = Flask(__name__)
@@ -19,7 +19,7 @@ def addFlowerfun():
     if request.method == 'POST':
         
             # Get form data
-            
+            flower_nursery_id=session.get('id') 
             flower_image=request.files['flower_image']
             flower_image.save('static/images/'+flower_image.filename)
             flower_image_name=flower_image.filename
@@ -48,15 +48,15 @@ def addFlowerfun():
             
             # Define SQL query to insert data into flower_plan table
             query = """INSERT INTO flower 
-                       (flower_image_name,flower_name, flower_information, color, season, category, altitude, height, area,  grow_time, pesticide, fertilizer, disease, fragrance, shape, sunlight, watering) 
-                       VALUES (%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+                       (flower_nursery_id,flower_image_name,flower_name, flower_information, color, season, category, altitude, height, area,  grow_time, pesticide, fertilizer, disease, fragrance, shape, sunlight, watering) 
+                       VALUES (%s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
             
             # Execute SQL query with form data
-            cursor.execute(query, (flower_image_name,flower_name, flower_information, color, season, category, altitude, height, area, grow_time, pesticide, fertilizer, disease, fragrance, shape, sunlight, watering))
+            cursor.execute(query, (flower_nursery_id,flower_image_name,flower_name, flower_information, color, season, category, altitude, height, area, grow_time, pesticide, fertilizer, disease, fragrance, shape, sunlight, watering))
             
             # Commit changes to the database
             connection.commit()
-            return render_template("nursery/flowers.html")
+            return redirect(url_for('flowers_nursery_details'))
     
     else:
         # Render the add-flower template if the request method is not POST

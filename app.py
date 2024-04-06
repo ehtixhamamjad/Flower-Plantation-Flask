@@ -38,7 +38,7 @@ class User(db.Model):
 class Flower(db.Model):
     __tablename__ = 'flower'
     flower_id = db.Column(db.Integer, primary_key=True) 
-    # flower_nursery = db.Column(db.Integer,nullable=True) # Added Flower id
+    flower_nursery_id = db.Column(db.Integer,nullable=True) 
     flower_image_name = db.Column(db.String(225), unique=False, nullable=True)
     flower_name = db.Column(db.String(225), unique=False, nullable=True)
     flower_information = db.Column(db.String(225), unique=False, nullable=True)  # Changed to flower_information
@@ -169,9 +169,11 @@ def flowerdetails(id):
    
 @app.route('/nursery/flowers',methods=['GET'])
 def getFlowerdata():
-     # Fetch all flower plans from the database
+    nursery_id = session.get('id')
+
+# Fetch all flower plans from the database
     cur = mysql.connection.cursor()
-    cur.execute("SELECT  flower_id ,flower_image_name, flower_name, flower_information, color, season, category, altitude, height, area,  grow_time, pesticide, fertilizer, disease, fragrance, shape, sunlight, watering FROM flower")
+    cur.execute("SELECT flower_id, flower_image_name, flower_name, flower_information, color, season, category, altitude, height, area, grow_time, pesticide, fertilizer, disease, fragrance, shape, sunlight, watering FROM flower WHERE flower_nursery_id = %s", (nursery_id,))
     flower_data = cur.fetchall()
     cur.close()
     # Pass the fetched data to the template
@@ -191,9 +193,21 @@ def getFlowerdatainuserflower():
 
 
 @app.route('/nursery/flowers')
-def flowers_nursery():
+def flowers_nursery_details():
     return render_template("nursery/flowers.html")
-
+@app.route('/nursery/nursery-flower-details/<int:id>', methods=['GET','POST'])
+def Flowers_Nursery_Details_byID(id):
+    try:
+        # Fetch flower details from the database based on the provided ID
+        flower_data = Flower.query.filter_by(flower_id=id).first()
+        if flower_data:
+            # Pass the fetched data to the template
+            return render_template("nursery/nursery-flower-details.html", flower=flower_data)
+        else:
+            return "Flower not found."
+    except ValueError:
+        return "Invalid ID provided."
+    return render_template("/nursery/nursery-flower-details.html")
 @app.route('/editflower/<int:id>', methods=['GET', 'POST'])
 def editflower(id):
     flower_data = Flower.query.filter_by(flower_id=id).first()
@@ -247,20 +261,21 @@ def deleteflower(id):
     delflower = Flower.query.filter_by(flower_id=id).first()
     db.session.delete(delflower)
     db.session.commit()
-    return render_template("nursery/flowers.html")
+    return redirect(url_for('flowers_nursery_details'))
 
-@app.route('/nursery',methods=['GET'])
+@app.route('/nursery', methods=['GET'])
 def nursery():
- if 'id' in session: 
-     # Fetch all flower plans from the database
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT  flower_id ,flower_image_name, flower_name, flower_information, color, season, category, altitude, height, area,  grow_time, pesticide, fertilizer, disease, fragrance, shape, sunlight, watering FROM flower")
-    flower_data = cur.fetchall()
-    cur.close()
-    # Pass the fetched data to the template
-    return render_template("/nursery/index.html", flowers=flower_data)
- else:
-    return render_template("nursery/login.html")
+    if 'id' in session:
+        # Fetch all flower plans from the database
+        nursery_id = session.get('id')
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT flower_id, flower_image_name, flower_name, flower_information, color, season, category, altitude, height, area, grow_time, pesticide, fertilizer, disease, fragrance, shape, sunlight, watering FROM flower WHERE flower_nursery_id = %s", (nursery_id,))
+        flower_data = cur.fetchall()
+        cur.close()
+        # Pass the fetched data to the template
+        return render_template("/nursery/index.html", flowers=flower_data)
+    else:
+        return render_template("nursery/login.html")
 
 # user///////////////////////////
 @app.route('/user')
@@ -280,9 +295,7 @@ def user():
 @app.route('/user/flower')
 def userflower():
     return render_template("user/flower.html")
-@app.route('/user/cityflower')
-def cityflower():
-    return render_template("user/cityflower.html")
+
 
 @app.route('/user/user-flower-plan',methods=['GET'])
 def userplan():
@@ -308,7 +321,7 @@ def deleteflowerplan(id):
     delplan = Plan.query.filter_by(plan_id=id).first()
     db.session.delete(delplan)
     db.session.commit()
-    return render_template("user/plan.html")
+    return redirect(url_for('userplan'))
    
 @app.route('/user/favourite')
 def userfavourite():
@@ -316,7 +329,7 @@ def userfavourite():
     cur.execute("SELECT * FROM favorite_flower")
     existing_flowers = cur.fetchall()  # Use fetchall() to fetch all rows
     cur.close()
-
+    return render_template('user/favourite.html', flowers=existing_flowers)
 
 @app.route('/addfvtfavourite/<int:id>')
 def addfvtfavourite(id):
@@ -344,7 +357,7 @@ def addfvtfavourite(id):
         # Flower with the specified ID does not exist
         return redirect(url_for('user'))
 @app.route('/user/cityflower',methods=['GET'])
-def getFlowerdataincityflower():
+def cityflower():
      # Fetch all flower plans from the database
     userid = session.get('id') 
     if userid is not None:
