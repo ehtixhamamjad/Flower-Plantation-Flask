@@ -45,5 +45,5 @@ def addnurserylogin():
     else:  
         cur.close()
         conn.close()
-        return render_template("login.html")
+        return render_template("nursery/login.html")
 

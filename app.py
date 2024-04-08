@@ -159,9 +159,13 @@ def flowerdetails(id):
     try:
         # Fetch flower details from the database based on the provided ID
         flower_data = Flower.query.filter_by(flower_id=id).first()
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT name,address, city, zip,country,phone FROM nursery_owner WHERE id = %s", (flower_data.flower_nursery_id,))
+        nursery_data = cur.fetchall()
+        cur.close()
         if flower_data:
             # Pass the fetched data to the template
-            return render_template("/flower-details.html", flower=flower_data)
+            return render_template("/flower-details.html", flower=flower_data,nurseryData=nursery_data)
         else:
             return "Flower not found."
     except ValueError:
@@ -200,9 +204,13 @@ def Flowers_Nursery_Details_byID(id):
     try:
         # Fetch flower details from the database based on the provided ID
         flower_data = Flower.query.filter_by(flower_id=id).first()
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT name,address, city, zip,country,phone FROM nursery_owner WHERE id = %s", (flower_data.flower_nursery_id,))
+        nursery_data = cur.fetchall()
+        cur.close()
         if flower_data:
             # Pass the fetched data to the template
-            return render_template("nursery/nursery-flower-details.html", flower=flower_data)
+            return render_template("nursery/nursery-flower-details.html", flower=flower_data,nurseryData=nursery_data)
         else:
             return "Flower not found."
     except ValueError:
@@ -276,7 +284,68 @@ def nursery():
         return render_template("/nursery/index.html", flowers=flower_data)
     else:
         return render_template("nursery/login.html")
+@app.route('/nursery/location',methods=['GET'])
+def getNurseryDataInLocation():
+     # Fetch all flower plans from the database
+    id = session.get('id')
 
+    # Fetch nursery data based on the provided location
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT name, address, city, zip, country, phone FROM nursery_owner WHERE id = %s", (id,))
+    nursery_data = cur.fetchall()
+    cur.close()
+
+    # Pass the fetched data to the template
+    return render_template("nursery/location.html", nurseryData=nursery_data)
+@app.route('/nursery/updatelocation', methods=['GET', 'POST'])
+def updatelocation():
+    # cur = mysql.connection.cursor()
+    # cur.execute("SELECT * FROM nursery_owner WHERE id = %s", (nursery_data['id'],))
+    # nursery = cur.fetchone()
+    # cur.close()
+    # Retrieve the nursery data from the form
+    nursery_data = {
+        'id': session.get('id'),  # Retrieve nursery ID from session
+        'nursery-name': request.form.get('nursery-name'),
+        'address': request.form.get('address'),
+        'city': request.form.get('city'),
+        'zip': request.form.get('zipcode'),
+        'country': request.form.get('country'),
+        'phoneNumber': request.form.get('phoneNumber')
+    }
+   
+    # Check if any required field is missing
+    if None in nursery_data.values():
+        print(nursery_data)
+        return "One or more fields are missing", 400
+
+    # Check if the nursery ID exists in the session
+    if not nursery_data['id']:
+        return "Nursery ID not found in session", 404
+    
+    # Check if the nursery with the provided ID exists in the database
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM nursery_owner WHERE id = %s", (nursery_data['id'],))
+    nursery = cur.fetchone()
+    cur.close()
+    if not nursery:
+        return "Nursery with the provided ID does not exist", 404
+    
+    # Update the nursery data in the database
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        UPDATE nursery_owner 
+        SET name = %s, address = %s, city = %s, zip = %s, country = %s, phone = %s 
+        WHERE id = %s
+    """, (nursery_data['nursery-name'], nursery_data['address'], nursery_data['city'], 
+          nursery_data['zip'], nursery_data['country'], nursery_data['phoneNumber'], 
+          nursery_data['id']))
+    mysql.connection.commit()
+    cur.close()
+    
+    # Redirect to the desired page
+    return redirect(url_for('nursery'))
+   
 # user///////////////////////////
 @app.route('/user')
 def user():

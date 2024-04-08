@@ -145,13 +145,13 @@
     <!--Header section ends-->
     <div class="container">
       <h1 class="heading">Add<span> Location</span></h1>
-      <form action="#">
+      <form action="/nursery/updatelocation" method="POST">
         <div class="form-group">
           <label for="name">Nursery Name:</label>
           <input
             type="text"
             id="name"
-            name="name"
+            name="nursery-name"
             placeholder="Nursery Name"
             required
           />
@@ -176,16 +176,7 @@
             required
           />
         </div>
-        <div class="form-group">
-          <label for="state">State:</label>
-          <input
-            type="text"
-            id="state"
-            name="state"
-            placeholder="State"
-            required
-          />
-        </div>
+    
         <div class="form-group">
           <label for="zipcode">Zipcode:</label>
           <input
@@ -203,6 +194,16 @@
             id="country"
             name="country"
             placeholder="Country"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="state">Phone Number</label>
+          <input
+            type="text"
+            id="state"
+            name="phoneNumber"
+            placeholder="phoneNumber"
             required
           />
         </div>

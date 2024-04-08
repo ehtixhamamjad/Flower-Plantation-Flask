@@ -17,6 +17,17 @@
       margin: 0 auto;
       padding: 20px;
     }
+    .location-info p {
+        margin: 5px 0;
+        color: #555;
+        font-size: 18px;
+      }
+
+      .loc-icon {
+        color: #e84393;
+        padding: 10px;
+        font-size: larger !important;
+      }
 
     .row {
       display: flex;
@@ -224,7 +235,7 @@
   <!-- Image Details section start-->
   <section class="content" style="margin-top: 100px;">
     <div>
-      <h1 class="heading"><span>Tulip</span></h1>
+      <h1 class="heading"><span>{{ flower.flower_name }}</span></h1>
       <img src=" {{ url_for('static', filename='images/' +flower.flower_image_name) }}" alt="" />
 
       <!--icons section starts-->
@@ -276,29 +287,7 @@
               </div>
             </div>
           </div>
-           <div class="col-lg-3 col-md-6 col-sm-12">
-              <div class="card">
-                <div class="card-body text-center">
-                  <i class="fas fa-mountain card-icon color"></i>
-                  <div class="card-title">Altitude</div>
-                  <p class="card-text">
-                    {{ flower.altitude }}
-                  </p>
-                </div>
-              </div>
-            </div> 
-            <div class="col-lg-3 col-md-6 col-sm-12">
-              <div class="card">
-                <div class="card-body text-center">
-                  <i class="fas fa-mountain card-icon color"></i>
-                  <div class="card-title">Fragrance </div>
-                  <p class="card-text">
-                    {{ flower.fragrance }}
-                  </p>
-                </div>
-              </div>
-            </div> 
-        </div>
+
       </div>
       
       <div class="container">
@@ -401,11 +390,37 @@
           </div>
         </div>
       </div>
+      <div class="container">
+        <div class="row py-2">
+          <div class="col-lg-3 col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-body text-center">
+                <i class="fas fa-mountain card-icon color"></i>
+                <div class="card-title">Altitude</div>
+                <p class="card-text">
+                  {{ flower.altitude }}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-body text-center">
+                <i class="fas fa-mountain card-icon color"></i>
+                <div class="card-title">Fragrance </div>
+                <p class="card-text">
+                  {{ flower.fragrance }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <!--icons section ends-->
       <div class="image-details">
         <h1 style="color: #e84393;">
           <!-- Let’s explore the colorful world of Tulip Flowers -->
-          Tulip Flower
+          {{ flower.flower_name }}
         </h1>
         <p>Tulips are among the most beloved and iconic spring flowers, renowned for their exquisite beauty and vibrant
           colors. Native to Central Asia and Turkey, tulips belong to the genus Tulipa and are part of the Liliaceae
@@ -423,7 +438,57 @@
       </div>
     </div>
   </section>
+  <section>
+  <h1 class="heading">
+    <i class="fa-brands fa-pagelines loc-icon"></i>Available<span>
+      Information</span
+    >
+  </h1>
+  {% for nursery in nurseryData %}
+  <div class="card">
+    <div class="card-content">
+      <div class="location-info">
+        <p>
+          <strong
+            ><i class="fas fa-seedling icon loc-icon"></i>Nursery
+            Name:</strong
+          >
+          {{ nursery[0] }}
+        </p>
+        <p>
+          <strong
+            ><i class="fas fa-map-marker-alt icon loc-icon"></i
+            >Address:</strong
+          >
+          {{ nursery[1] }}
+        </p>
+        <p>
+          <strong><i class="fas fa-city icon loc-icon"></i>City:</strong>
+          {{ nursery[2] }}
+        </p>
+        <p>
+          <strong><i class="fas fa-globe icon loc-icon"></i>ZIP code:</strong>
+          {{ nursery[3] }}
+        </p>
+        <p>
+          <strong
+            ><i class="fas fa-envelope icon loc-icon"></i>Country:</strong
+          >
+          {{ nursery[4] }}
+        </p>
+        <p>
+          <strong
+            ><i class="fas fa-globe-americas icon loc-icon"></i
+            >Phone Number:</strong
+          >
+          {{ nursery[5] }}
+        </p>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
 </div> 
+</section>
   <!-- Image Details section end-->
   <!--footer section starts-->
   <section class="footer">
