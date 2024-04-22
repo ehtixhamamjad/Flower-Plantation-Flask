@@ -1,14 +1,14 @@
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory,jsonify,flash,session
 from werkzeug.utils import secure_filename
 import os
-# from tensorflow.keras.models import load_model
-# import numpy as np
+from tensorflow.keras.models import load_model
+import numpy as np
 from myFunctions.nurserysignupform import nurserysignupform
 from myFunctions.usersignupform import usersignupform
 from myFunctions.loginfun import addlogin
-# from tensorflow.keras.preprocessing.image import load_img, img_to_array
-# database
+from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
+# database
 from myFunctions.userAddPlanFun import userAddPlanFun
 from myFunctions.addFlowerfun import addFlowerfun
 from myFunctions.nurserylogin import addnurserylogin
@@ -33,7 +33,6 @@ class User(db.Model):
     area = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(254), unique=True, nullable=False)
     password = db.Column(db.String(254), nullable=False)
-   
 
 class Flower(db.Model):
     __tablename__ = 'flower'
@@ -84,7 +83,67 @@ app.config['MYSQL_USER']='root'
 app.config['MYSQL_PASSWORD']=''
 app.config['MYSQL_DB']='flowerplantation'
 mysql = MySQL(app)
+# Define predict_class function
+def predict_class(model, image_path):
+    # Load the image
+    img = load_img(image_path, target_size=(64, 64))
+    # Convert the image to a numpy array
+    img_array = img_to_array(img)
+    # Rescale the image
+    img_array = img_array / 255.0
+    # Expand dimensions to match the model's expected input shape
+    img_array = np.expand_dims(img_array, axis=0)
+    # Make a prediction
+    prediction = model.predict(img_array)
+    # Get the index of the highest probability
+    predicted_class_index = np.argmax(prediction)
+    return predicted_class_index
 
+# Load the model
+model_file_path = 'model.h5'
+model = load_model(model_file_path)
+
+# Define class_indices
+class_indices = {
+    0: 'Daisy',
+    1: 'Dandelion',
+    2: 'Rose',
+    3: 'SunFlower',
+    4: 'Tulip'
+}
+
+UPLOAD_FOLDER = 'uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/predict', methods=['GET', 'POST'])
+def predict():
+    if request.method == 'POST':
+        if 'image' not in request.files:
+            return redirect(request.url)
+        file = request.files['image']
+        if file.filename == '':
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            predicted_class_index = predict_class(model, os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            # Check if predicted_class_index is in class_indices
+            if predicted_class_index in class_indices:
+                class_name = class_indices[predicted_class_index]
+            else:
+                # Handle the case where predicted_class_index is not found in class_indices
+                class_name = "Unknown"
+            return render_template('result.html', class_name=class_name)
+    return redirect(url_for('home_page'))
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 # main
 @app.route('/index')
@@ -102,7 +161,6 @@ def getFlowerdataindex():
         cur.close()
         # Pass the fetched data to the template
         return render_template("/index.html", flowers=flower_data)
-   
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -113,12 +171,9 @@ def login():
         # For example, render the login form
         return render_template("login.html")
 
-
-
 @app.route('/nurserylogin' , methods=['POST', 'GET'])
 def nurserylogin():
     return addnurserylogin()
-
 
 @app.route('/logout')
 def logout():
@@ -135,13 +190,9 @@ def logout():
 def nurserylogout():
     if 'id' in session:
         # Print session ID before deletion (for debugging)
-     
-        session.pop('id', None)
-
-    
+        session.pop('id', None)    
     # Redirect to the login page or any other desired page
     return redirect(url_for('nurserylogin'))
-
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -183,8 +234,6 @@ def getFlowerdata():
     # Pass the fetched data to the template
     return render_template("nursery/flowers.html", flowers=flower_data)
 
-
-
 @app.route('/user/flower',methods=['GET'])
 def getFlowerdatainuserflower():
      # Fetch all flower plans from the database
@@ -194,7 +243,6 @@ def getFlowerdatainuserflower():
     cur.close()
     # Pass the fetched data to the template
     return render_template("user/flower.html", flowers=flower_data)
-
 
 @app.route('/nursery/flowers')
 def flowers_nursery_details():
@@ -220,8 +268,6 @@ def Flowers_Nursery_Details_byID(id):
 def editflower(id):
     flower_data = Flower.query.filter_by(flower_id=id).first()
     return render_template("nursery/editflower.html", flowers=flower_data)
-   
-  
 
 @app.route('/nursery/flowers',methods=['GET'])
 def flowersdata():
@@ -232,7 +278,6 @@ def flowersdata():
     cur.close()
     # Pass the fetched data to the template
     return render_template("nursery/flowers.html", flowers=flower_data)
-
 
 @app.route('/updateflower/<int:id>', methods=['POST'])
 def updateflower(id):
@@ -284,19 +329,19 @@ def nursery():
         return render_template("/nursery/index.html", flowers=flower_data)
     else:
         return render_template("nursery/login.html")
+    
 @app.route('/nursery/location',methods=['GET'])
 def getNurseryDataInLocation():
      # Fetch all flower plans from the database
     id = session.get('id')
-
     # Fetch nursery data based on the provided location
     cur = mysql.connection.cursor()
     cur.execute("SELECT name, address, city, zip, country, phone FROM nursery_owner WHERE id = %s", (id,))
     nursery_data = cur.fetchall()
     cur.close()
-
     # Pass the fetched data to the template
     return render_template("nursery/location.html", nurseryData=nursery_data)
+
 @app.route('/nursery/updatelocation', methods=['GET', 'POST'])
 def updatelocation():
     # cur = mysql.connection.cursor()
@@ -342,7 +387,6 @@ def updatelocation():
           nursery_data['id']))
     mysql.connection.commit()
     cur.close()
-    
     # Redirect to the desired page
     return redirect(url_for('nursery'))
    
@@ -354,7 +398,6 @@ def user():
         # Fetch all flower plans from the database
         cur.execute("SELECT flower_id, flower_image_name, flower_name, flower_information, color, season, category, altitude, height, area, grow_time, pesticide, fertilizer, disease, fragrance, shape, sunlight, watering FROM flower")
         flower_data = cur.fetchall()
-
         # Close cursor and connection
         cur.close()
         # Pass the fetched data to the template
@@ -364,7 +407,6 @@ def user():
 @app.route('/user/flower')
 def userflower():
     return render_template("user/flower.html")
-
 
 @app.route('/user/user-flower-plan',methods=['GET'])
 def userplan():
@@ -433,12 +475,9 @@ def cityflower():
         cur = mysql.connection.cursor()
         cur.execute("SELECT area FROM user WHERE id = %s", (userid,))
         flower_area = cur.fetchone()[0]  # Fetch a single row and first column value
-
         cur.execute("SELECT flower_id, flower_image_name, flower_name, flower_information, color, season, category, altitude, height, area, grow_time, pesticide, fertilizer, disease, fragrance, shape, sunlight, watering FROM flower WHERE area = %s", (flower_area,))
-
         flower_data = cur.fetchall()
         cur.close()
-        
         # Pass the fetched data to the template
         return render_template("/user/cityflower.html", flowers=flower_data)
     else:
@@ -524,7 +563,6 @@ def adminlogin():
             return render_template("admin/login.html")
     else:
         return render_template("admin/login.html")
-    
 
 @app.route('/adminlogout')
 def adminlogout():
@@ -579,34 +617,30 @@ def updateplan(id):
     
     # Render the edit plan form with the existing plan data
     return render_template("user/editplan.html", flower_plans=plan_data)
+
 @app.route('/admin/user/<int:id>')
 def delete_user_by_admin(id):
     cur = mysql.connection.cursor()
-    
     # Check if the user exists in the user table
     cur.execute("SELECT * FROM user WHERE id = %s", (id,))
     existing_user = cur.fetchone()
-    
     if existing_user:
         # If the user exists, delete it
         cur.execute("DELETE FROM user WHERE id = %s", (id,))
         mysql.connection.commit()  # Commit the transaction
-        
     cur.close()
     return redirect(url_for('adminuserinfo'))
+
 @app.route('/admin/nusery/<int:id>')
 def delete_nursery_by_admin(id):
     cur = mysql.connection.cursor()
-    
     # Check if the user exists in the user table
     cur.execute("SELECT * FROM nursery_owner WHERE id = %s", (id,))
     existing_user = cur.fetchone()
-    
     if existing_user:
         # If the user exists, delete it
         cur.execute("DELETE FROM nursery_owner WHERE id = %s", (id,))
         mysql.connection.commit()  # Commit the transaction
-        
     cur.close()
     return redirect(url_for('adminnurseryinfo'))
 app.run(debug=True)
